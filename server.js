@@ -252,6 +252,11 @@ app.get('/view-logs', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
+// 新增這段：讓網址只要打 https://sihua-line-bot.onrender.com/ 
+// 就自動跳轉到你那精美的紀錄頁面
+app.get('/', (req, res) => {
+    res.redirect('/view-logs');
+});
 app.listen(PORT, () => {
     console.log(`🚀 Webhook 伺服器已在連接埠 ${PORT} 順利運作中！`);
 });
