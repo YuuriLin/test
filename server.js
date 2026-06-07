@@ -63,47 +63,19 @@ const welcomeFlexMessage = {
           color: "#CCCCCC"
         },
         // 按鈕選單區（全面改為深色高對比、清楚色塊框格）
-        {
-          type: "box",
-          layout: "vertical",
-          margin: "lg",
-          spacing: "md",
-          contents: [
-            {
-              type: "button",
-              action: { type: "postback", label: "1. 先逛逛人氣商品", data: "tag=未購買&option=1", displayText: "我想逛逛人氣商品" },
-              style: "primary", height: "md", color: "#2C3E50"
-            },
-            {
-              type: "button",
-              action: { type: "postback", label: "2. 找適合我的枕頭", data: "tag=未購買&option=2", displayText: "我想找適合我的枕頭" },
-              style: "primary", height: "md", color: "#2C3E50"
-            },
-            {
-              type: "button",
-              action: { type: "postback", label: "3. 夏日涼感床包 / 新品介紹", data: "tag=未購買&option=3", displayText: "我想看夏日涼感床包" },
-              style: "primary", height: "md", color: "#2C3E50"
-            },
-            {
-              type: "button",
-              action: { type: "postback", label: "4. 助眠周邊小物", data: "tag=未購買&option=4", displayText: "我想看助眠周邊小物" },
-              style: "primary", height: "md", color: "#2C3E50"
-            },
-            {
-              type: "button",
-              action: { type: "postback", label: "5. 已購買客服詢問", data: "tag=已購買&option=5", displayText: "我是已購買客戶，想詢問客服" },
-              style: "primary", height: "md", color: "#1B5E20" 
-            },
-            {
-              type: "button",
-              action: { type: "postback", label: "6. 寵物展限定 : 優惠卷領取", data: "tag=未購買&option=6", displayText: "我想領取寵物展限定優惠券" },
-              style: "primary", height: "md", color: "#2C3E50" 
-            }
-          ]
-        }
-      ]
-    }
-  }
+       {
+  type: "box",
+  layout: "vertical",
+  margin: "lg",
+  spacing: "md",
+  contents: [
+    { type: "button", action: { type: "postback", label: "1. 產品介紹", data: "tag=未購買&option=1" }, style: "primary", height: "md", color: "#2C3E50" },
+    { type: "button", action: { type: "postback", label: "2. 優惠活動 例：雙11", data: "tag=未購買&option=2" }, style: "primary", height: "md", color: "#2C3E50" },
+    { type: "button", action: { type: "postback", label: "3. 毛孩知識內容", data: "tag=未購買&option=3" }, style: "primary", height: "md", color: "#2C3E50" },
+    { type: "button", action: { type: "postback", label: "4. 品牌幕後故事", data: "tag=未購買&option=4" }, style: "primary", height: "md", color: "#2C3E50" },
+    { type: "button", action: { type: "postback", label: "5. 以上皆是", data: "tag=未購買&option=5" }, style: "primary", height: "md", color: "#1B5E20" },
+    { type: "button", action: { type: "postback", label: "6. 不便收訊息", data: "tag=未購買&option=6" }, style: "primary", height: "md", color: "#7F8C8D" }
+  ]    
 };
 
 // LINE 規定必須使用的簽章驗證中間件
