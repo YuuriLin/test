@@ -38,43 +38,25 @@ const welcomeFlexMessage = {
       paddingAll: "xl",
       backgroundColor: "#FFFFFF",
       contents: [
-        // 品牌主標題
-        {
-          type: "text",
-          text: "四花軟居 🐾",
-          weight: "bold",
-          size: "xl",
-          color: "#111111"
-        },
-        // 文青質感前言
+        { type: "text", text: "四花軟居 🐾", weight: "bold", size: "xl", color: "#111111" },
         {
           type: "text",
           text: "您好，很開心您與四花成為好友 📋\n\n我們期盼打造和貓咪一樣療癒的睡眠想像，讓寢具不只是陪伴，更是生活裡最放鬆的溫暖情境。💤\n\n先簡單選擇以下選項，看看我們有什麼睡眠好物吧！",
-          wrap: true,
-          size: "sm",
-          color: "#333333",
-          margin: "md",
-          lineSpacing: "4px"
+          wrap: true, size: "sm", color: "#333333", margin: "md", lineSpacing: "4px"
         },
-        // 分隔線
-        {
-          type: "separator",
-          margin: "lg",
-          color: "#CCCCCC"
-        },
-        // 按鈕選單區
+        { type: "separator", margin: "lg", color: "#CCCCCC" },
         {
           type: "box",
           layout: "vertical",
           margin: "lg",
           spacing: "md",
           contents: [
-            { type: "button", action: { type: "postback", label: "1. 先逛逛人氣商品", data: "tag=未購買&option=1" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "2. 找適合我的枕頭", data: "tag=未購買&option=2" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "3. 夏日涼感床包", data: "tag=未購買&option=3" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "4. 助眠周邊小物", data: "tag=未購買&option=4" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "5. 已購買客服詢問", data: "tag=未購買&option=5" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "6. 寵物展限定 : 優惠卷領取", data: "tag=未購買&option=6" }, style: "primary", height: "md", color: "#7B9DBA" }
+            { type: "button", action: { type: "postback", label: "1. 先逛逛人氣商品", data: "tag=未購買&option=1", displayText: "1. 先逛逛人氣商品" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "2. 找適合我的枕頭", data: "tag=未購買&option=2", displayText: "2. 找適合我的枕頭" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "3. 夏日涼感床包", data: "tag=未購買&option=3", displayText: "3. 夏日涼感床包" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "4. 助眠周邊小物", data: "tag=未購買&option=4", displayText: "4. 助眠周邊小物" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "5. 已購買客服詢問", data: "tag=未購買&option=5", displayText: "5. 已購買客服詢問" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "6. 寵物展限定 : 優惠卷領取", data: "tag=未購買&option=6", displayText: "6. 寵物展限定 : 優惠卷領取" }, style: "primary", height: "md", color: "#7B9DBA" }
           ]
         }
       ]
