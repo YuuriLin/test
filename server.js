@@ -69,12 +69,12 @@ const welcomeFlexMessage = {
           margin: "lg",
           spacing: "md",
           contents: [
-            { type: "button", action: { type: "postback", label: "1. 產品介紹", data: "tag=未購買&option=1" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "2. 優惠活動 例：雙11", data: "tag=未購買&option=2" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "3. 毛孩知識內容", data: "tag=未購買&option=3" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "4. 品牌幕後故事", data: "tag=未購買&option=4" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "5. 以上皆是", data: "tag=未購買&option=5" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "6. 不便收訊息", data: "tag=未購買&option=6" }, style: "primary", height: "md", color: "#7B9DBA" }
+            { type: "button", action: { type: "postback", label: "1. 先逛逛人氣商品", data: "tag=未購買&option=1" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "2. 找適合我的枕頭", data: "tag=未購買&option=2" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "3. 夏日涼感床包", data: "tag=未購買&option=3" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "4. 助眠周邊小物", data: "tag=未購買&option=4" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "5. 已購買客服詢問", data: "tag=未購買&option=5" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "6. 寵物展限定 : 優惠卷領取", data: "tag=未購買&option=6" }, style: "primary", height: "md", color: "#7B9DBA" }
           ]
         }
       ]
