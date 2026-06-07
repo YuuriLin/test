@@ -62,20 +62,24 @@ const welcomeFlexMessage = {
           margin: "lg",
           color: "#CCCCCC"
         },
-        // 按鈕選單區（全面改為深色高對比、清楚色塊框格）
-       {
-  type: "box",
-  layout: "vertical",
-  margin: "lg",
-  spacing: "md",
-  contents: [
-    { type: "button", action: { type: "postback", label: "1. 產品介紹", data: "tag=未購買&option=1" }, style: "primary", height: "md", color: "#2C3E50" },
-    { type: "button", action: { type: "postback", label: "2. 優惠活動 例：雙11", data: "tag=未購買&option=2" }, style: "primary", height: "md", color: "#2C3E50" },
-    { type: "button", action: { type: "postback", label: "3. 毛孩知識內容", data: "tag=未購買&option=3" }, style: "primary", height: "md", color: "#2C3E50" },
-    { type: "button", action: { type: "postback", label: "4. 品牌幕後故事", data: "tag=未購買&option=4" }, style: "primary", height: "md", color: "#2C3E50" },
-    { type: "button", action: { type: "postback", label: "5. 以上皆是", data: "tag=未購買&option=5" }, style: "primary", height: "md", color: "#1B5E20" },
-    { type: "button", action: { type: "postback", label: "6. 不便收訊息", data: "tag=未購買&option=6" }, style: "primary", height: "md", color: "#7F8C8D" }
-  ]    
+        // 按鈕選單區
+        {
+          type: "box",
+          layout: "vertical",
+          margin: "lg",
+          spacing: "md",
+          contents: [
+            { type: "button", action: { type: "postback", label: "1. 產品介紹", data: "tag=未購買&option=1" }, style: "primary", height: "md", color: "#2C3E50" },
+            { type: "button", action: { type: "postback", label: "2. 優惠活動 例：雙11", data: "tag=未購買&option=2" }, style: "primary", height: "md", color: "#2C3E50" },
+            { type: "button", action: { type: "postback", label: "3. 毛孩知識內容", data: "tag=未購買&option=3" }, style: "primary", height: "md", color: "#2C3E50" },
+            { type: "button", action: { type: "postback", label: "4. 品牌幕後故事", data: "tag=未購買&option=4" }, style: "primary", height: "md", color: "#2C3E50" },
+            { type: "button", action: { type: "postback", label: "5. 以上皆是", data: "tag=未購買&option=5" }, style: "primary", height: "md", color: "#1B5E20" },
+            { type: "button", action: { type: "postback", label: "6. 不便收訊息", data: "tag=未購買&option=6" }, style: "primary", height: "md", color: "#7F8C8D" }
+          ]
+        }
+      ]
+    }
+  }
 };
 
 // LINE 規定必須使用的簽章驗證中間件
