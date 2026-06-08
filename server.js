@@ -38,26 +38,77 @@ const welcomeFlexMessage = {
       paddingAll: "xl",
       backgroundColor: "#FFFFFF",
       contents: [
+        // 標題與貓咪歡迎文字
         { type: "text", text: "四花軟居 🐾", weight: "bold", size: "xl", color: "#111111" },
         {
           type: "text",
-          text: "您好，很開心您與四花成為好友 📋\n\n我們期盼打造和貓咪一樣療癒的睡眠想像，讓寢具不只是陪伴，更是生活裡最放鬆的溫暖情境。💤\n\n先簡單選擇以下選項，看看我們有什麼睡眠好物吧！",
+          text: "您好，很開心您與四花成為好友 📋\n\n我們期盼打造和貓咪一樣療癒的睡眠想像，讓寢具不只是陪伴，更是生活裡最放遜的溫暖情境。💤\n\n先簡單選擇以下選項，看看我們有什麼睡眠好物吧！",
           wrap: true, size: "sm", color: "#333333", margin: "md", lineSpacing: "4px"
         },
+        // 分隔線
         { type: "separator", margin: "lg", color: "#CCCCCC" },
+        
+        // 🎯 核心修改：這區全部換成純 text 搭配點擊 action，完美拿掉按鈕外框與背景色
         {
           type: "box",
           layout: "vertical",
           margin: "lg",
-          spacing: "md",
+          spacing: "xl", // 拉大選項之間的上下間距，讓手機使用者非常好按、不誤點
           contents: [
-            // 🚀 這裡全部幫你改成 message 類型，點擊會直接「發送純文字」觸發後台關鍵字
-            { type: "button", action: { type: "message", label: "1. 先逛逛人氣商品", text: "先逛逛人氣商品" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "message", label: "2. 找適合我的枕頭 例：雙11", text: "找適合我的枕頭" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "message", label: "3. 夏日涼感床包", text: "夏日涼感床包" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "message", label: "4. 助眠周邊小物", text: "助眠周邊小物" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "message", label: "5. 已購買客服詢問", text: "5.已購買客服詢問" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "message", label: "6. 寵物展限定 : 優惠卷領取", text: "寵物展限定 : 優惠卷領取" }, style: "primary", height: "md", color: "#7B9DBA" }
+            {
+              type: "text",
+              text: "先逛逛人氣商品",
+              size: "md",
+              color: "#557A95", // 質感的深灰藍字體，也可改成 #111111 純黑
+              align: "center",  // 文字置中，呈現你想要的優雅懸浮感
+              weight: "bold",
+              action: { type: "message", label: "先逛逛人氣商品", text: "先逛逛人氣商品" }
+            },
+            {
+              type: "text",
+              text: "找適合我的枕頭",
+              size: "md",
+              color: "#557A95",
+              align: "center",
+              weight: "bold",
+              action: { type: "message", label: "找適合我的枕頭", text: "找適合我的枕頭" }
+            },
+            {
+              type: "text",
+              text: "夏日涼感床包",
+              size: "md",
+              color: "#557A95",
+              align: "center",
+              weight: "bold",
+              action: { type: "message", label: "夏日涼感床包", text: "夏日涼感床包" }
+            },
+            {
+              type: "text",
+              text: "助眠周邊小物",
+              size: "md",
+              color: "#557A95",
+              align: "center",
+              weight: "bold",
+              action: { type: "message", label: "助眠周邊小物", text: "助眠周邊小物" }
+            },
+            {
+              type: "text",
+              text: "已購買客服詢問",
+              size: "md",
+              color: "#557A95",
+              align: "center",
+              weight: "bold",
+              action: { type: "message", label: "5.已購買客服詢問", text: "5.已購買客服詢問" }
+            },
+            {
+              type: "text",
+              text: "寵物展限定 : 優惠卷領取",
+              size: "md",
+              color: "#557A95",
+              align: "center",
+              weight: "bold",
+              action: { type: "message", label: "寵物展限定 : 優惠卷領取", text: "寵物展限定 : 優惠卷領取" }
+            }
           ]
         }
       ]
