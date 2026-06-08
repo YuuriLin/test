@@ -27,87 +27,92 @@ const dbPool = mysql.createPool({
 });
 
 // 四花軟居「歡迎詞」Flex 訊息主體
-const welcomeFlexMessage = {
-  type: "flex",
-  altText: "歡迎來到四花軟居！🐾",
-  contents: {
-    type: "bubble",
-    body: {
-      type: "box",
-      layout: "vertical",
-      paddingAll: "xl",
-      backgroundColor: "#FFFFFF",
-      contents: [
-        // 標題與貓咪歡迎文字
-        { type: "text", text: "四花軟居 🐾", weight: "bold", size: "xl", color: "#111111" },
-        {
-          type: "text",
-          text: "您好，很開心您與四花成為好友 📋\n\n我們期盼打造和貓咪一樣療癒的睡眠想像，讓寢具不只是陪伴，更是生活裡最放鬆的溫暖情境。💤\n\n先簡單選擇以下選項，看看我們有什麼睡眠好物吧！",
-          wrap: true, size: "sm", color: "#333333", margin: "md", lineSpacing: "4px"
-        },
-        // 分隔線
-        { type: "separator", margin: "lg", color: "#CCCCCC" },
-        
-        // 🎯 完美修正區：拿掉 weight: bold，字體變細、顏色改成優雅灰藍
-        {
-          type: "box",
-          layout: "vertical",
-          margin: "lg",
-          spacing: "xl", // 選項間距
-          contents: [
-            {
-              type: "text",
-              text: "先逛逛人氣商品",
-              size: "md",
-              color: "#4A6B82", // ✨ 完美複製截圖的優雅灰藍色
-              align: "center",  // ✨ 置中對齊
-              action: { type: "message", label: "先逛逛人氣商品", text: "先逛逛人氣商品" }
-            },
-            {
-              type: "text",
-              text: "找適合我的枕頭",
-              size: "md",
-              color: "#4A6B82",
-              align: "center",
-              action: { type: "message", label: "找適合我的枕頭", text: "找適合我的枕頭" }
-            },
-            {
-              type: "text",
-              text: "夏日涼感床包",
-              size: "md",
-              color: "#4A6B82",
-              align: "center",
-              action: { type: "message", label: "夏日涼感床包", text: "夏日涼感床包" }
-            },
-            {
-              type: "text",
-              text: "助眠周邊小物",
-              size: "md",
-              color: "#4A6B82",
-              align: "center",
-              action: { type: "message", label: "助眠周邊小物", text: "助眠周邊小物" }
-            },
-            {
-              type: "text",
-              text: "已購買客服詢問",
-              size: "md",
-              color: "#4A6B82",
-              align: "center",
-              action: { type: "message", label: "5.已購買客服詢問", text: "5.已購買客服詢問" }
-            },
-            {
-              type: "text",
-              text: "寵物展限定 : 優惠卷領取",
-              size: "md",
-              color: "#4A6B82",
-              align: "center",
-              action: { type: "message", label: "寵物展限定 : 優惠卷領取", text: "寵物展限定 : 優惠卷領取" }
-            }
-          ]
-        }
-      ]
+// 🎯 改成函數型態，這樣才能動態把使用者的名字（displayName）丟進去
+const getWelcomeFlexMessage = (displayName) => {
+  return {
+    type: "flex",
+    altText: "歡迎來到四花軟居！🐾",
+    contents: {
+      type: "bubble",
+      body: {
+        type: "box",
+        layout: "vertical",
+        paddingAll: "xl",
+        backgroundColor: "#FFFFFF",
+        contents: [
+          // ✨ 移除大標題，直接使用「顧客名稱 + 您好」，並套用你指定的新文案
+          {
+            type: "text",
+            text: `${displayName} 您好，很開心您與四花成為好友😆\n\n我們秉持著「打造和貓咪一樣的療癒睡眠想像💤」的出發點，讓四花軟居不只是一個寢具品牌，而是陪你打造一個更舒服、更放鬆的睡眠情境。\n\n先簡單選擇以下選項，了解看看我們有甚麼睡眠好物吧!`,
+            wrap: true,
+            size: "sm",
+            color: "#333333",
+            lineSpacing: "5px"
+          },
+          // 分隔線
+          { type: "separator", margin: "lg", color: "#CCCCCC" },
+          
+          // 下方選項維持原樣（優雅細體、灰藍色、置中無邊框）
+          {
+            type: "box",
+            layout: "vertical",
+            margin: "lg",
+            spacing: "xl",
+            contents: [
+              {
+                type: "text",
+                text: "1. 先逛逛人氣商品",
+                size: "md",
+                color: "#4A6B82",
+                align: "center",
+                action: { type: "message", label: "先逛逛人氣商品", text: "先逛逛人氣商品" }
+              },
+              {
+                type: "text",
+                text: "2. 找適合我的枕頭 例：雙11",
+                size: "md",
+                color: "#4A6B82",
+                align: "center",
+                action: { type: "message", label: "找適合我的枕頭", text: "找適合我的枕頭" }
+              },
+              {
+                type: "text",
+                text: "3. 夏日涼感床包",
+                size: "md",
+                color: "#4A6B82",
+                align: "center",
+                action: { type: "message", label: "夏日涼感床包", text: "夏日涼感床包" }
+              },
+              {
+                type: "text",
+                text: "4. 助眠周邊小物",
+                size: "md",
+                color: "#4A6B82",
+                align: "center",
+                action: { type: "message", label: "助眠周邊小物", text: "助眠周邊小物" }
+              },
+              {
+                type: "text",
+                text: "5. 已購買客服詢問",
+                size: "md",
+                color: "#4A6B82",
+                align: "center",
+                action: { type: "message", label: "5.已購買客服詢問", text: "5.已購買客服詢問" }
+              },
+              {
+                type: "text",
+                text: "6. 寵物展限定 : 優惠卷領取",
+                size: "md",
+                color: "#4A6B82",
+                align: "center",
+                action: { type: "message", label: "寵物展限定 : 優惠卷領取", text: "寵物展限定 : 優惠卷領取" }
+              }
+            ]
+          }
+        ]
+      }
     }
-  }
+  };
 };
 
 // LINE 規定必須使用的簽章驗證中間件
@@ -125,7 +130,7 @@ async function handleEvent(event) {
     // 狀況 1：當新好友加入（Follow）
     if (event.type === 'follow') {
         const userId = event.source.userId;
-        let displayName = "未知使用者";
+        let displayName = "新朋友";
 
         try {
             // 向 LINE 伺服器請求該使用者的個人檔案
@@ -136,20 +141,37 @@ async function handleEvent(event) {
         }
 
         console.log(`[新好友加入] 名字: ${displayName} (ID: ${userId})`);
+        
+        // 🎯 修正處：正確調用函數，並把撈到的真實姓名(displayName)傳入
         return client.replyMessage({
             replyToken: event.replyToken,
-            messages: [welcomeFlexMessage]
+            messages: [getWelcomeFlexMessage(displayName)]
         });
     }
 
-    // 狀況 2：當使用者點擊按鈕（Postback）
+    // 狀況 2：當使用者點擊按鈕傳送純文字訊息過來（Message）
+    // 💡 因為我們把按鈕改成 message 形式，使用者點擊時會在這裡觸發
+    if (event.type === 'message' && event.message.type === 'text') {
+        const userText = event.message.text;
+        const userId = event.source.userId;
+        console.log(`[收到文字訊息] 來自 ID: ${userId}, 內容: ${userText}`);
+
+        // 範例：如果點擊了「找適合我的枕頭」
+        if (userText === '找適合我的枕頭') {
+            // 你可以在這裡寫：當他點擊枕頭選項時，機器人要自動回覆什麼訊息
+            // return client.replyMessage({ replyToken: event.replyToken, messages: [...] });
+        }
+
+        return null;
+    }
+
+    // 狀況 3：當使用者點擊傳統 Postback 按鈕（保留原功能備用）
     if (event.type === 'postback') {
         const userId = event.source.userId;
-        const postbackData = event.postback.data; // 得到 "tag=未購買&option=2"
+        const postbackData = event.postback.data; 
         
         let displayName = "未知使用者";
         try {
-            // 動態抓取點擊者的 LINE 暱稱
             const profile = await client.getProfile(userId);
             displayName = profile.displayName;
         } catch (profileError) {
@@ -159,19 +181,17 @@ async function handleEvent(event) {
         console.log(`[點擊追蹤] 名字: ${displayName}, Data: ${postbackData}`);
 
         try {
-            // 解析資料並寫入資料庫
             const params = new URLSearchParams(postbackData);
             const tagGroup = params.get('tag');
             const optionNum = params.get('option');
 
-            // 【重要】這裡我們把原本存進資料庫的 userId 欄位，直接替換存入真實姓名 displayName
             const sql = 'INSERT INTO click_logs (user_id, tag_group, option_num, clicked_at) VALUES (?, ?, ?, NOW())';
             await dbPool.query(sql, [displayName, tagGroup, optionNum]);
             
             console.log(`[資料庫記錄成功] ${displayName} 歸類為【${tagGroup}】受眾`);
 
         } catch (dbError) {
-            console.error('資料庫寫入失敗（請確認 MySQL 已建立對應資料表）：', dbError.message);
+            console.error('資料庫寫入失敗：', dbError.message);
         }
         return null;
     }
@@ -179,7 +199,7 @@ async function handleEvent(event) {
 }
 
 // ==========================================
-// 🛠️ 新增：自動檢查並建立資料表的防呆機制
+// 🛠️ 自動檢查並建立資料表的防呆機制
 // ==========================================
 async function initDatabaseTable() {
     try {
@@ -199,8 +219,9 @@ async function initDatabaseTable() {
     }
 }
 initDatabaseTable();
+
 // ==========================================
-// 📥 新增：從網頁直接看資料庫紀錄的祕密通道
+// 📥 從網頁直接看資料庫紀錄的祕密通道
 // ==========================================
 app.get('/view-logs', async (req, res) => {
     try {
@@ -256,16 +277,9 @@ app.get('/view-logs', async (req, res) => {
 });
 
 const PORT = process.env.PORT || 3000;
-// 新增這段：讓網址只要打 https://sihua-line-bot.onrender.com/ 
-// 就自動跳轉到你那精美的紀錄頁面
 app.get('/', (req, res) => {
     res.redirect('/view-logs');
 });
 app.listen(PORT, () => {
     console.log(`🚀 Webhook 伺服器已在連接埠 ${PORT} 順利運作中！`);
 });
-
-
-
-
-
