@@ -25,7 +25,7 @@ const dbPool = mysql.createPool({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: process.env.DB_PORT,
-    ssl: { rejectUnauthorized: false } // Aiven Cloud 必備的 SSL 安全連線設定
+    ssl: { rejectUnauthorized: false } // Aiven Cloud 安全連線必備
 });
 
 // ==========================================
@@ -54,7 +54,7 @@ const getWelcomeFlexMessage = (displayName) => {
           // 分隔線
           { type: "separator", margin: "lg", color: "#CCCCCC" },
           
-          // 下方選項（優雅細體、灰藍色、置中無邊框）
+          // 下方選項
           {
             type: "box",
             layout: "vertical",
@@ -150,23 +150,23 @@ async function handleEvent(event) {
         });
     }
 
-    // 狀況 2：當使用者傳送純文字訊息或點擊文字關鍵字（Message）
+    // 狀況 2：當使用者傳送純文字訊息（Message）
     if (event.type === 'message' && event.message.type === 'text') {
         const userText = event.message.text.trim();
         const userId = event.source.userId;
         console.log(`[收到文字訊息] 來自 ID: ${userId}, 內容: ${userText}`);
 
-        // 🎯 核心修正點：當點擊「寵物展限定 : 優惠卷領取」
+        // 🎯 核心更動：當點擊「寵物展限定 : 優惠卷領取」
         if (userText === '寵物展限定 : 優惠卷領取') {
             return client.replyMessage({
                 replyToken: event.replyToken,
                 messages: [
-                    // 訊息 1：感謝語與折扣碼
+                    // 訊息 1：精準格式化的感謝文案
                     {
                         type: 'text',
-                        text: '感謝您的輸入，優惠代碼為:123，請於結帳時輸入即可套用，請點選以下您感興趣的商品，可以讓我們對您更加了解呦'
+                        text: '感謝您的輸入，優惠代碼為:123，請於結帳時輸入即可套用，\n請點選以下您感興趣的商品，可以讓我們對您更加了解呦。'
                     },
-                    // 訊息 2：🔧 修正處：已將此處原先錯誤的 size: 'medium' 欄位徹底移除，防止 LINE API 報錯 400
+                    // 訊息 2：具備「自動貼標籤與資料庫連動功能」的商品選項按鈕組
                     {
                         type: 'flex',
                         altText: '選擇您感興趣的商品系列',
@@ -182,50 +182,53 @@ async function handleEvent(event) {
                                         style: 'primary',
                                         color: '#4A6B82',
                                         height: 'sm',
-                                        action: { type: 'message', label: '枕頭系列', text: '我想了解枕頭系列' }
+                                        action: { 
+                                            type: 'postback', 
+                                            label: '枕頭系列', 
+                                            data: 'tag=寵物展興趣&option=1', // 寫入資料庫的標籤資料
+                                            displayText: '我想了解枕頭系列'      // 顧客聊天室畫面上顯示的文字
+                                        }
                                     },
                                     {
                                         type: 'button',
                                         style: 'primary',
                                         color: '#4A6B82',
                                         height: 'sm',
-                                        action: { type: 'message', label: '床包系列', text: '我想了解床包系列' }
+                                        action: { 
+                                            type: 'postback', 
+                                            label: '床包系列', 
+                                            data: 'tag=寵物展興趣&option=2',
+                                            displayText: '我想了解床包系列'
+                                        }
                                     },
                                     {
                                         type: 'button',
                                         style: 'primary',
                                         color: '#4A6B82',
                                         height: 'sm',
-                                        action: { type: 'message', label: '助眠香氛系列', text: '我想了解助眠香氛系列' }
+                                        action: { 
+                                            type: 'postback', 
+                                            label: '助眠香氛系列', 
+                                            data: 'tag=寵物展興趣&option=3',
+                                            displayText: '我想了解助眠香氛系列'
+                                        }
                                     }
                                 ]
                             }
                         }
                     },
-                    // 訊息 3：優惠券的使用說明
+                    // 訊息 3：使用說明
                     {
                         type: 'text',
-                        text: '優惠卷的使用說明:優惠代碼使用期限至7/18為止，不可與官網其餘優惠活動並用，但可與商品優惠組合併用，一組帳號僅限使用一次，每筆使用優惠代碼結帳訂單，皆會捐出$200分潤給「臺北市流浪貓保護協會」。'
+                        text: '使用說明:優惠代碼使用期限至7/18為止，不可與官網其餘優惠活動並用，但可與商品優惠組合併用，一組帳號僅限使用一次，每筆使用優惠代碼結帳訂單，皆會捐出$200分潤給「臺北市流浪貓保護協會」。'
                     }
                 ]
             });
         }
-
-        // 🏷️ 預留區塊：可自行擴充顧客點擊商品系列按鈕時的回覆與邏輯
-        if (userText === '我想了解枕頭系列') {
-            console.log(`[興趣標籤] 使用者 ${userId} 對【枕頭系列】感興趣`);
-        }
-        if (userText === '我想了解床包系列') {
-            console.log(`[興趣標籤] 使用者 ${userId} 對【床包系列】感興趣`);
-        }
-        if (userText === '我想了解助眠香氛系列') {
-            console.log(`[興趣標籤] 使用者 ${userId} 對【助眠香氛系列】感興趣`);
-        }
-
         return null;
     }
 
-    // 狀況 3：當使用者點擊 Postback 按鈕（用於往後資料庫貼標籤擴充）
+    // 狀況 3：核心追蹤！當使用者點擊任何「貼標籤型」按鈕（Postback）
     if (event.type === 'postback') {
         const userId = event.source.userId;
         const postbackData = event.postback.data; 
@@ -245,21 +248,30 @@ async function handleEvent(event) {
             const tagGroup = params.get('tag');
             const optionNum = params.get('option');
 
+            // 寫入數據庫
             const sql = 'INSERT INTO click_logs (user_id, tag_group, option_num, clicked_at) VALUES (?, ?, ?, NOW())';
             await dbPool.query(sql, [displayName, tagGroup, optionNum]);
             
-            console.log(`[資料庫記錄成功] ${displayName} 歸類為【${tagGroup}】受眾`);
+            console.log(`[資料庫記錄成功] ${displayName} 歸類為【${tagGroup}】第 ${optionNum} 項受眾`);
 
         } catch (dbError) {
             console.error('資料庫寫入失敗：', dbError.message);
         }
-        return null;
+
+        // 當點擊完上述任何一個商品興趣按鈕後，機器人給予的自動貼心回饋
+        return client.replyMessage({
+            replyToken: event.replyToken,
+            messages: [{
+                type: 'text',
+                text: '感謝您的選擇！小幫手已為您登記您的商品喜好囉 🥰💤'
+            }]
+        });
     }
     return null;
 }
 
 // ==========================================
-// 4. 🛠️ 自動檢查並建立資料表的防呆機制
+// 4. 自動檢查並建立資料表的防呆機制
 // ==========================================
 async function initDatabaseTable() {
     try {
@@ -275,20 +287,18 @@ async function initDatabaseTable() {
         await dbPool.query(createTableSql);
         console.log('✅ 資料庫連線成功，且 sihua_db.click_logs 資料表已自動準備就緒！');
     } catch (err) {
-        // 這裡改為 console.warn 且不拋出錯誤，確保即使主機名稱暫時找不到，LINE 機器人聊天功能依然能活著發送
-        console.warn('⚠️ 資料庫初始化失敗。請檢查 Render 後台的 DB_HOST 是否與 Aiven 一致。目前不影響 LINE 訊息收發。錯誤原因:', err.message);
+        console.warn('⚠️ 資料庫初始化提示（不影響LINE聊天）：', err.message);
     }
 }
 
-// 使用獨立的 try-catch 包裹，防止環境變數異常阻斷整個伺服器啟動
 try {
     initDatabaseTable();
 } catch (e) {
-    console.error('資料庫啟動引導發生異常:', e.message);
+    console.error('資料庫引導異常:', e.message);
 }
 
 // ==========================================
-// 5. 📥 後台點擊紀錄網頁明細 (Secret網頁)
+// 5. 後台點擊紀錄網頁明細
 // ==========================================
 app.get('/view-logs', async (req, res) => {
     try {
@@ -308,7 +318,7 @@ app.get('/view-logs', async (req, res) => {
                     tr:nth-child(even) { background-color: #f8f9fa; }
                     tr:hover { background-color: #f1f1f1; }
                     .tag { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
-                    .tag-unbought { background-color: #ffeaa7; color: #d63031; }
+                    .tag-unbought { background-color: #ffeaa7; color: #b33939; }
                     .tag-bought { background-color: #55efc4; color: #00b894; }
                 </style>
             </head>
@@ -317,7 +327,7 @@ app.get('/view-logs', async (req, res) => {
                 <table>
                     <tr>
                         <th>編號</th>
-                        <th>LINE 使用者 ID</th>
+                        <th>LINE 使用者名稱/ID</th>
                         <th>受眾標籤群組</th>
                         <th>點擊選項</th>
                         <th>點擊時間</th>
@@ -325,7 +335,8 @@ app.get('/view-logs', async (req, res) => {
         `;
         
         rows.forEach(row => {
-            const tagClass = row.tag_group === '已購買' ? 'tag-bought' : 'tag-unbought';
+            const isPetTag = row.tag_group.includes('寵物展');
+            const tagClass = isPetTag ? 'tag-unbought' : 'tag-bought';
             html += `
                 <tr>
                     <td>${row.id}</td>
@@ -339,7 +350,7 @@ app.get('/view-logs', async (req, res) => {
         html += `</table></body></html>`;
         res.send(html);
     } catch (err) {
-        res.status(500).send('後台資料讀取失敗（請確認 Render 環境變數中的 DB_HOST 網址是否正確解析）：' + err.message);
+        res.status(500).send('後台資料讀取失敗：' + err.message);
     }
 });
 
