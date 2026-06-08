@@ -69,7 +69,7 @@ const getWelcomeFlexMessage = (displayName) => {
               },
               {
                 type: "text",
-                text: "找適合我的枕頭 例：雙11",
+                text: "找適合我的枕頭",
                 size: "md",
                 color: "#4A6B82",
                 align: "center",
