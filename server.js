@@ -51,12 +51,13 @@ const welcomeFlexMessage = {
           margin: "lg",
           spacing: "md",
           contents: [
-            { type: "button", action: { type: "postback", label: "1. 先逛逛人氣商品", data: "tag=未購買&option=1", message: "先逛逛人氣商品" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "2. 找適合我的枕頭 例：雙11", data: "tag=未購買&option=2", message: "找適合我的枕頭" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "3. 夏日涼感床包", data: "tag=未購買&option=3", message: "夏日涼感床包" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "4. 助眠周邊小物", data: "tag=未購買&option=4", message: "助眠周邊小物" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "5. 已購買客服詢問", data: "tag=未購買&option=5", message: "5.已購買客服詢問" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "6. 寵物展限定 : 優惠卷領取", data: "tag=未購買&option=6", message: "寵物展限定 : 優惠卷領取" }, style: "primary", height: "md", color: "#7B9DBA" }
+            // 🚀 這裡全部幫你改成 message 類型，點擊會直接「發送純文字」觸發後台關鍵字
+            { type: "button", action: { type: "message", label: "1. 先逛逛人氣商品", text: "先逛逛人氣商品" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "message", label: "2. 找適合我的枕頭 例：雙11", text: "找適合我的枕頭" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "message", label: "3. 夏日涼感床包", text: "夏日涼感床包" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "message", label: "4. 助眠周邊小物", text: "助眠周邊小物" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "message", label: "5. 已購買客服詢問", text: "5.已購買客服詢問" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "message", label: "6. 寵物展限定 : 優惠卷領取", text: "寵物展限定 : 優惠卷領取" }, style: "primary", height: "md", color: "#7B9DBA" }
           ]
         }
       ]
