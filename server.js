@@ -118,7 +118,7 @@ const getWelcomeFlexMessage = (displayName) => {
 };
 
 // ==========================================
-// 3. 🎯 全新一體化優惠券 Flex 訊息樣板
+// 3. 🎯 優惠券 Flex 訊息樣板（精準分類標籤版）
 // ==========================================
 const getCouponFlexMessage = () => {
   return {
@@ -141,7 +141,7 @@ const getCouponFlexMessage = () => {
             color: "#333333",
             lineSpacing: "5px"
           },
-          // 中間：加上驚嘆號 EMOJI 提示的使用說明
+          // 中間：使用說明提示
           {
             type: "text",
             text: "⚠️ 使用說明:優惠代碼使用期限至7/18為止，不可與官網其餘優惠活動並用，但可與商品優惠組合併用，一組帳號僅限使用一次，每筆使用優惠代碼結帳訂單，皆會捐出$200分潤給「臺北市流浪貓保護協會」。",
@@ -151,10 +151,10 @@ const getCouponFlexMessage = () => {
             margin: "md",
             lineSpacing: "4px"
           },
-          // 分隔線（完美複製歡迎詞美學）
+          // 分隔線
           { type: "separator", margin: "lg", color: "#CCCCCC" },
           
-          // 下方選項：整合為優雅置中字體，點擊自動觸發資料庫貼標籤
+          // 下方選項：🔧 標籤改為依點選品類精準獨立命名
           {
             type: "box",
             layout: "vertical",
@@ -170,7 +170,7 @@ const getCouponFlexMessage = () => {
                 action: { 
                     type: "postback", 
                     label: "枕頭系列", 
-                    data: "tag=寵物展興趣&option=1", 
+                    data: "tag=枕頭系列&option=1", // 👈 標籤直接寫入「枕頭系列」
                     displayText: "我想了解枕頭系列" 
                 }
               },
@@ -183,7 +183,7 @@ const getCouponFlexMessage = () => {
                 action: { 
                     type: "postback", 
                     label: "床包系列", 
-                    data: "tag=寵物展興趣&option=2", 
+                    data: "tag=床包系列&option=2", // 👈 標籤直接寫入「床包系列」
                     displayText: "我想了解床包系列" 
                 }
               },
@@ -196,7 +196,7 @@ const getCouponFlexMessage = () => {
                 action: { 
                     type: "postback", 
                     label: "助眠香氣系列", 
-                    data: "tag=寵物展興趣&option=3", 
+                    data: "tag=助眠香氣系列&option=3", // 👈 標籤直接寫入「助眠香氣系列」
                     displayText: "我想了解助眠香氣系列" 
                 }
               }
@@ -251,14 +251,13 @@ async function handleEvent(event) {
         if (userText === '寵物展限定 : 優惠卷領取') {
             return client.replyMessage({
                 replyToken: event.replyToken,
-                // 這裡改為直接吐出全新美化的一體化卡片
                 messages: [getCouponFlexMessage()]
             });
         }
         return null;
     }
 
-    // 狀況 3：核心追蹤！當使用者點擊任何「貼標籤型」文字選項（Postback）
+    // 狀況 3：當使用者點擊貼標籤型選項（Postback）
     if (event.type === 'postback') {
         const userId = event.source.userId;
         const postbackData = event.postback.data; 
@@ -282,13 +281,13 @@ async function handleEvent(event) {
             const sql = 'INSERT INTO click_logs (user_id, tag_group, option_num, clicked_at) VALUES (?, ?, ?, NOW())';
             await dbPool.query(sql, [displayName, tagGroup, optionNum]);
             
-            console.log(`[資料庫記錄成功] ${displayName} 歸類為【${tagGroup}】第 ${optionNum} 項受眾`);
+            console.log(`[資料庫記錄成功] ${displayName} 歸類為【${tagGroup}】`);
 
         } catch (dbError) {
             console.error('資料庫寫入失敗：', dbError.message);
         }
 
-        // 當點擊完商品興趣選項後，機器人給予的自動貼心回饋
+        // 自動回饋感謝訊息
         return client.replyMessage({
             replyToken: event.replyToken,
             messages: [{
@@ -348,8 +347,9 @@ app.get('/view-logs', async (req, res) => {
                     tr:nth-child(even) { background-color: #f8f9fa; }
                     tr:hover { background-color: #f1f1f1; }
                     .tag { display: inline-block; padding: 3px 8px; border-radius: 3px; font-size: 12px; font-weight: bold; }
-                    .tag-unbought { background-color: #ffeaa7; color: #b33939; }
+                    .tag-product { background-color: #e8f4fd; color: #1da1f2; border: 1px solid #bee3f8; }
                     .tag-bought { background-color: #55efc4; color: #00b894; }
+                    .tag-other { background-color: #ffeaa7; color: #b33939; }
                 </style>
             </head>
             <body>
@@ -365,8 +365,13 @@ app.get('/view-logs', async (req, res) => {
         `;
         
         rows.forEach(row => {
-            const isPetTag = row.tag_group.includes('寵物展');
-            const tagClass = isPetTag ? 'tag-unbought' : 'tag-bought';
+            let tagClass = 'tag-product';
+            if (row.tag_group === '已購買') {
+                tagClass = 'tag-bought';
+            } else if (!row.tag_group.includes('系列')) {
+                tagClass = 'tag-other';
+            }
+            
             html += `
                 <tr>
                     <td>${row.id}</td>
