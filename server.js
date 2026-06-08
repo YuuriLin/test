@@ -25,7 +25,7 @@ const dbPool = mysql.createPool({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: process.env.DB_PORT,
-    ssl: { rejectUnauthorized: false } // Aiven Cloud 安全連線必備
+    ssl: { rejectUnauthorized: false } // Aiven Cloud 安全連線設定
 });
 
 // ==========================================
@@ -118,7 +118,98 @@ const getWelcomeFlexMessage = (displayName) => {
 };
 
 // ==========================================
-// 3. LINE Webhook 路由與核心事件處理器
+// 3. 🎯 全新一體化優惠券 Flex 訊息樣板
+// ==========================================
+const getCouponFlexMessage = () => {
+  return {
+    type: "flex",
+    altText: "感謝您的輸入，這是您的寵物展限定優惠！", 
+    contents: {
+      type: "bubble",
+      body: {
+        type: "box",
+        layout: "vertical",
+        paddingAll: "xl",
+        backgroundColor: "#FFFFFF",
+        contents: [
+          // 上方：感謝語與引導文字
+          {
+            type: "text",
+            text: "感謝您的輸入，優惠代碼為:123，請於結帳時輸入即可套用，\n請點選以下您感興趣的商品，可以讓我們對您更加了解呦。",
+            wrap: true,
+            size: "sm",
+            color: "#333333",
+            lineSpacing: "5px"
+          },
+          // 中間：加上驚嘆號 EMOJI 提示的使用說明
+          {
+            type: "text",
+            text: "⚠️ 使用說明:優惠代碼使用期限至7/18為止，不可與官網其餘優惠活動並用，但可與商品優惠組合併用，一組帳號僅限使用一次，每筆使用優惠代碼結帳訂單，皆會捐出$200分潤給「臺北市流浪貓保護協會」。",
+            wrap: true,
+            size: "xs",
+            color: "#666666",
+            margin: "md",
+            lineSpacing: "4px"
+          },
+          // 分隔線（完美複製歡迎詞美學）
+          { type: "separator", margin: "lg", color: "#CCCCCC" },
+          
+          // 下方選項：整合為優雅置中字體，點擊自動觸發資料庫貼標籤
+          {
+            type: "box",
+            layout: "vertical",
+            margin: "lg",
+            spacing: "xl",
+            contents: [
+              {
+                type: "text",
+                text: "枕頭系列",
+                size: "md",
+                color: "#4A6B82",
+                align: "center",
+                action: { 
+                    type: "postback", 
+                    label: "枕頭系列", 
+                    data: "tag=寵物展興趣&option=1", 
+                    displayText: "我想了解枕頭系列" 
+                }
+              },
+              {
+                type: "text",
+                text: "床包系列",
+                size: "md",
+                color: "#4A6B82",
+                align: "center",
+                action: { 
+                    type: "postback", 
+                    label: "床包系列", 
+                    data: "tag=寵物展興趣&option=2", 
+                    displayText: "我想了解床包系列" 
+                }
+              },
+              {
+                type: "text",
+                text: "助眠香氣系列",
+                size: "md",
+                color: "#4A6B82",
+                align: "center",
+                action: { 
+                    type: "postback", 
+                    label: "助眠香氣系列", 
+                    data: "tag=寵物展興趣&option=3", 
+                    displayText: "我想了解助眠香氣系列" 
+                }
+              }
+            ]
+          }
+        ]
+      }
+    }
+  };
+};
+
+// ==========================================
+// 4. LINE Webhook 路由與核心事件處理器
 // ==========================================
 app.post('/webhook', line.middleware(config), (req, res) => {
     Promise.all(req.body.events.map(handleEvent))
@@ -150,85 +241,24 @@ async function handleEvent(event) {
         });
     }
 
-    // 狀況 2：當使用者傳送純文字訊息（Message）
+    // 狀況 2：當使用者傳送純文字訊息
     if (event.type === 'message' && event.message.type === 'text') {
         const userText = event.message.text.trim();
         const userId = event.source.userId;
         console.log(`[收到文字訊息] 來自 ID: ${userId}, 內容: ${userText}`);
 
-        // 🎯 核心更動：當點擊「寵物展限定 : 優惠卷領取」
+        // 當點擊「寵物展限定 : 優惠卷領取」
         if (userText === '寵物展限定 : 優惠卷領取') {
             return client.replyMessage({
                 replyToken: event.replyToken,
-                messages: [
-                    // 訊息 1：精準格式化的感謝文案
-                    {
-                        type: 'text',
-                        text: '感謝您的輸入，優惠代碼為:123，請於結帳時輸入即可套用，\n請點選以下您感興趣的商品，可以讓我們對您更加了解呦。'
-                    },
-                    // 訊息 2：具備「自動貼標籤與資料庫連動功能」的商品選項按鈕組
-                    {
-                        type: 'flex',
-                        altText: '選擇您感興趣的商品系列',
-                        contents: {
-                            type: 'bubble',
-                            body: {
-                                type: 'box',
-                                layout: 'vertical',
-                                spacing: 'md',
-                                contents: [
-                                    {
-                                        type: 'button',
-                                        style: 'primary',
-                                        color: '#4A6B82',
-                                        height: 'sm',
-                                        action: { 
-                                            type: 'postback', 
-                                            label: '枕頭系列', 
-                                            data: 'tag=寵物展興趣&option=1', // 寫入資料庫的標籤資料
-                                            displayText: '我想了解枕頭系列'      // 顧客聊天室畫面上顯示的文字
-                                        }
-                                    },
-                                    {
-                                        type: 'button',
-                                        style: 'primary',
-                                        color: '#4A6B82',
-                                        height: 'sm',
-                                        action: { 
-                                            type: 'postback', 
-                                            label: '床包系列', 
-                                            data: 'tag=寵物展興趣&option=2',
-                                            displayText: '我想了解床包系列'
-                                        }
-                                    },
-                                    {
-                                        type: 'button',
-                                        style: 'primary',
-                                        color: '#4A6B82',
-                                        height: 'sm',
-                                        action: { 
-                                            type: 'postback', 
-                                            label: '助眠香氛系列', 
-                                            data: 'tag=寵物展興趣&option=3',
-                                            displayText: '我想了解助眠香氛系列'
-                                        }
-                                    }
-                                ]
-                            }
-                        }
-                    },
-                    // 訊息 3：使用說明
-                    {
-                        type: 'text',
-                        text: '使用說明:優惠代碼使用期限至7/18為止，不可與官網其餘優惠活動並用，但可與商品優惠組合併用，一組帳號僅限使用一次，每筆使用優惠代碼結帳訂單，皆會捐出$200分潤給「臺北市流浪貓保護協會」。'
-                    }
-                ]
+                // 這裡改為直接吐出全新美化的一體化卡片
+                messages: [getCouponFlexMessage()]
             });
         }
         return null;
     }
 
-    // 狀況 3：核心追蹤！當使用者點擊任何「貼標籤型」按鈕（Postback）
+    // 狀況 3：核心追蹤！當使用者點擊任何「貼標籤型」文字選項（Postback）
     if (event.type === 'postback') {
         const userId = event.source.userId;
         const postbackData = event.postback.data; 
@@ -248,7 +278,7 @@ async function handleEvent(event) {
             const tagGroup = params.get('tag');
             const optionNum = params.get('option');
 
-            // 寫入數據庫
+            // 寫入資料庫
             const sql = 'INSERT INTO click_logs (user_id, tag_group, option_num, clicked_at) VALUES (?, ?, ?, NOW())';
             await dbPool.query(sql, [displayName, tagGroup, optionNum]);
             
@@ -258,7 +288,7 @@ async function handleEvent(event) {
             console.error('資料庫寫入失敗：', dbError.message);
         }
 
-        // 當點擊完上述任何一個商品興趣按鈕後，機器人給予的自動貼心回饋
+        // 當點擊完商品興趣選項後，機器人給予的自動貼心回饋
         return client.replyMessage({
             replyToken: event.replyToken,
             messages: [{
@@ -271,7 +301,7 @@ async function handleEvent(event) {
 }
 
 // ==========================================
-// 4. 自動檢查並建立資料表的防呆機制
+// 5. 自動檢查並建立資料表的防呆機制
 // ==========================================
 async function initDatabaseTable() {
     try {
@@ -298,7 +328,7 @@ try {
 }
 
 // ==========================================
-// 5. 後台點擊紀錄網頁明細
+// 6. 後台點擊紀錄網頁明細
 // ==========================================
 app.get('/view-logs', async (req, res) => {
     try {
@@ -355,7 +385,7 @@ app.get('/view-logs', async (req, res) => {
 });
 
 // ==========================================
-// 6. 啟動 Web 伺服器
+// 7. 啟動 Web 伺服器
 // ==========================================
 const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => {
