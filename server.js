@@ -31,7 +31,7 @@ const dbPool = mysql.createPool({
 const getWelcomeFlexMessage = (displayName) => {
   return {
     type: "flex",
-    altText: "歡迎來到四花軟居！🐾",
+    altText: `${displayName} 您好，歡迎來到四花軟居！😆`, // ✨ 把這行改成新文案的預覽
     contents: {
       type: "bubble",
       body: {
