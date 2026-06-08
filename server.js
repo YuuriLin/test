@@ -27,11 +27,10 @@ const dbPool = mysql.createPool({
 });
 
 // 四花軟居「歡迎詞」Flex 訊息主體
-// 🎯 改成函數型態，這樣才能動態把使用者的名字（displayName）丟進去
 const getWelcomeFlexMessage = (displayName) => {
   return {
     type: "flex",
-    altText: `${displayName} 您好，歡迎來到四花軟居！😆`, // ✨ 把這行改成新文案的預覽
+    altText: `${displayName} 您好，歡迎來到四花軟居！😆`, 
     contents: {
       type: "bubble",
       body: {
@@ -40,7 +39,6 @@ const getWelcomeFlexMessage = (displayName) => {
         paddingAll: "xl",
         backgroundColor: "#FFFFFF",
         contents: [
-          // ✨ 移除大標題，直接使用「顧客名稱 + 您好」，並套用你指定的新文案
           {
             type: "text",
             text: `${displayName} 您好，很開心您與四花成為好友😆\n\n我們秉持著「打造和貓咪一樣的療癒睡眠想像💤」的出發點，讓四花軟居不只是一個寢具品牌，而是陪你打造一個更舒服、更放鬆的睡眠情境。\n\n先簡單選擇以下選項，了解看看我們有甚麼睡眠好物吧!`,
@@ -52,7 +50,7 @@ const getWelcomeFlexMessage = (displayName) => {
           // 分隔線
           { type: "separator", margin: "lg", color: "#CCCCCC" },
           
-          // 下方選項維持原樣（優雅細體、灰藍色、置中無邊框）
+          // 下方選項（優雅細體、灰藍色、置中無邊框）
           {
             type: "box",
             layout: "vertical",
@@ -125,7 +123,7 @@ app.post('/webhook', line.middleware(config), (req, res) => {
         });
 });
 
-// 事件核心處理器（已升級：自動動態抓取 LINE 使用者真實名稱）
+// 事件核心處理器
 async function handleEvent(event) {
     // 狀況 1：當新好友加入（Follow）
     if (event.type === 'follow') {
@@ -133,7 +131,6 @@ async function handleEvent(event) {
         let displayName = "新朋友";
 
         try {
-            // 向 LINE 伺服器請求該使用者的個人檔案
             const profile = await client.getProfile(userId);
             displayName = profile.displayName;
         } catch (profileError) {
@@ -142,7 +139,6 @@ async function handleEvent(event) {
 
         console.log(`[新好友加入] 名字: ${displayName} (ID: ${userId})`);
         
-        // 🎯 修正處：正確調用函數，並把撈到的真實姓名(displayName)傳入
         return client.replyMessage({
             replyToken: event.replyToken,
             messages: [getWelcomeFlexMessage(displayName)]
@@ -150,22 +146,84 @@ async function handleEvent(event) {
     }
 
     // 狀況 2：當使用者點擊按鈕傳送純文字訊息過來（Message）
-    // 💡 因為我們把按鈕改成 message 形式，使用者點擊時會在這裡觸發
     if (event.type === 'message' && event.message.type === 'text') {
-        const userText = event.message.text;
+        const userText = event.message.text.trim();
         const userId = event.source.userId;
         console.log(`[收到文字訊息] 來自 ID: ${userId}, 內容: ${userText}`);
 
-        // 範例：如果點擊了「找適合我的枕頭」
-        if (userText === '找適合我的枕頭') {
-            // 你可以在這裡寫：當他點擊枕頭選項時，機器人要自動回覆什麼訊息
+        // 🎯 核心新增：當點擊「寵物展限定 : 優惠卷領取」
+        if (userText === '寵物展限定 : 優惠卷領取') {
+            return client.replyMessage({
+                replyToken: event.replyToken,
+                messages: [
+                    // 訊息 1：感謝語與折扣碼
+                    {
+                        type: 'text',
+                        text: '感謝您的輸入，優惠代碼為:123，請於結帳時輸入即可套用，請點選以下您感興趣的商品，可以讓我們對您更加了解呦'
+                    },
+                    // 訊息 2：感興趣商品按鈕組 (Flex Message)
+                    {
+                        type: 'flex',
+                        altText: '選擇您感興趣的商品系列',
+                        contents: {
+                            type: 'bubble',
+                            size: 'medium',
+                            body: {
+                                type: 'box',
+                                layout: 'vertical',
+                                spacing: 'md',
+                                contents: [
+                                    {
+                                        type: 'button',
+                                        style: 'primary',
+                                        color: '#4A6B82',
+                                        height: 'sm',
+                                        action: { type: 'message', label: '枕頭系列', text: '我想了解枕頭系列' }
+                                    },
+                                    {
+                                        type: 'button',
+                                        style: 'primary',
+                                        color: '#4A6B82',
+                                        height: 'sm',
+                                        action: { type: 'message', label: '床包系列', text: '我想了解床包系列' }
+                                    },
+                                    {
+                                        type: 'button',
+                                        style: 'primary',
+                                        color: '#4A6B82',
+                                        height: 'sm',
+                                        action: { type: 'message', label: '助眠香氛系列', text: '我想了解助眠香氛系列' }
+                                    }
+                                ]
+                            }
+                        }
+                    },
+                    // 訊息 3：優惠券的使用說明
+                    {
+                        type: 'text',
+                        text: '優惠卷的使用說明:優惠代碼使用期限至7/18為止，不可與官網其餘優惠活動並用，但可與商品優惠組合併用，一組帳號僅限使用一次，每筆使用優惠代碼結帳訂單，皆會捐出$200分潤給「臺北市流浪貓保護協會」。'
+                    }
+                ]
+            });
+        }
+
+        // 🏷️ 預留區塊：當顧客點擊商品系列按鈕時的回覆與貼標籤邏輯
+        if (userText === '我想了解枕頭系列') {
+            console.log(`[興趣標籤] 使用者 ${userId} 對【枕頭系列】感興趣`);
+            // 你可以在這裡寫資料庫記錄或串接產品清單
             // return client.replyMessage({ replyToken: event.replyToken, messages: [...] });
+        }
+        if (userText === '我想了解床包系列') {
+            console.log(`[興趣標籤] 使用者 ${userId} 對【床包系列】感興趣`);
+        }
+        if (userText === '我想了解助眠香氛系列') {
+            console.log(`[興趣標籤] 使用者 ${userId} 對【助眠香氛系列】感興趣`);
         }
 
         return null;
     }
 
-    // 狀況 3：當使用者點擊傳統 Postback 按鈕（保留原功能備用）
+    // 狀況 3：當使用者點擊傳統 Postback 按鈕
     if (event.type === 'postback') {
         const userId = event.source.userId;
         const postbackData = event.postback.data; 
