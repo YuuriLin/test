@@ -51,12 +51,12 @@ const welcomeFlexMessage = {
           margin: "lg",
           spacing: "md",
           contents: [
-            { type: "button", action: { type: "postback", label: "1. 先逛逛人氣商品", data: "tag=未購買&option=1", displayText: "先逛逛人氣商品" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "2. 找適合我的枕頭 例：雙11", data: "tag=未購買&option=2", displayText: "找適合我的枕頭" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "3. 夏日涼感床包", data: "tag=未購買&option=3", displayText: "夏日涼感床包" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "4. 助眠周邊小物", data: "tag=未購買&option=4", displayText: "助眠周邊小物" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "5. 已購買客服詢問", data: "tag=未購買&option=5", displayText: "5.已購買客服詢問" }, style: "primary", height: "md", color: "#7B9DBA" },
-            { type: "button", action: { type: "postback", label: "6. 寵物展限定 : 優惠卷領取", data: "tag=未購買&option=6", displayText: "寵物展限定 : 優惠卷領取" }, style: "primary", height: "md", color: "#7B9DBA" }
+            { type: "button", action: { type: "postback", label: "1. 先逛逛人氣商品", data: "tag=未購買&option=1", message: "先逛逛人氣商品" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "2. 找適合我的枕頭 例：雙11", data: "tag=未購買&option=2", message: "找適合我的枕頭" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "3. 夏日涼感床包", data: "tag=未購買&option=3", message: "夏日涼感床包" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "4. 助眠周邊小物", data: "tag=未購買&option=4", message: "助眠周邊小物" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "5. 已購買客服詢問", data: "tag=未購買&option=5", message: "5.已購買客服詢問" }, style: "primary", height: "md", color: "#7B9DBA" },
+            { type: "button", action: { type: "postback", label: "6. 寵物展限定 : 優惠卷領取", data: "tag=未購買&option=6", message: "寵物展限定 : 優惠卷領取" }, style: "primary", height: "md", color: "#7B9DBA" }
           ]
         }
       ]
