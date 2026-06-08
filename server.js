@@ -23,7 +23,7 @@ const dbPool = mysql.createPool({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: process.env.DB_PORT,
-    ssl: { rejectUnauthorized: false } // 這是關鍵！
+    ssl: { rejectUnauthorized: false } // Aiven 資料庫必備
 });
 
 // 四花軟居「歡迎詞」Flex 訊息主體
@@ -151,7 +151,7 @@ async function handleEvent(event) {
         const userId = event.source.userId;
         console.log(`[收到文字訊息] 來自 ID: ${userId}, 內容: ${userText}`);
 
-        // 🎯 核心新增：當點擊「寵物展限定 : 優惠卷領取」
+        // 🎯 核心修正：當點擊「寵物展限定 : 優惠卷領取」
         if (userText === '寵物展限定 : 優惠卷領取') {
             return client.replyMessage({
                 replyToken: event.replyToken,
@@ -161,13 +161,12 @@ async function handleEvent(event) {
                         type: 'text',
                         text: '感謝您的輸入，優惠代碼為:123，請於結帳時輸入即可套用，請點選以下您感興趣的商品，可以讓我們對您更加了解呦'
                     },
-                    // 訊息 2：感興趣商品按鈕組 (Flex Message)
+                    // 訊息 2：🔧 修正處：移除 bubble 層級中錯誤的 size: 'medium' 屬性
                     {
                         type: 'flex',
                         altText: '選擇您感興趣的商品系列',
                         contents: {
                             type: 'bubble',
-                            size: 'medium',
                             body: {
                                 type: 'box',
                                 layout: 'vertical',
@@ -210,8 +209,6 @@ async function handleEvent(event) {
         // 🏷️ 預留區塊：當顧客點擊商品系列按鈕時的回覆與貼標籤邏輯
         if (userText === '我想了解枕頭系列') {
             console.log(`[興趣標籤] 使用者 ${userId} 對【枕頭系列】感興趣`);
-            // 你可以在這裡寫資料庫記錄或串接產品清單
-            // return client.replyMessage({ replyToken: event.replyToken, messages: [...] });
         }
         if (userText === '我想了解床包系列') {
             console.log(`[興趣標籤] 使用者 ${userId} 對【床包系列】感興趣`);
@@ -273,10 +270,16 @@ async function initDatabaseTable() {
         await dbPool.query(createTableSql);
         console.log('✅ 資料庫連線成功，且 sihua_db.click_logs 資料表已自動準備就緒！');
     } catch (err) {
-        console.error('❌ 資料庫初始化失敗，請確認 sihua_db 資料庫是否已存在：', err.message);
+        console.error('⚠️ 資料庫連線或初始化失敗，請檢查 Render 的 DB 變數設定（目前不影響機器人發送訊息）：', err.message);
     }
 }
-initDatabaseTable();
+
+// 使用安全封裝呼叫，防止因資料庫連不上而導致整個 Node 程式崩潰
+try {
+    initDatabaseTable();
+} catch (e) {
+    console.error('資料庫啟動引導異常:', e.message);
+}
 
 // ==========================================
 // 📥 從網頁直接看資料庫紀錄的祕密通道
@@ -330,7 +333,7 @@ app.get('/view-logs', async (req, res) => {
         html += `</table></body></html>`;
         res.send(html);
     } catch (err) {
-        res.status(500).send('資料庫讀取失敗：' + err.message);
+        res.status(500).send('資料庫讀取失敗（請先確認環境變數 DB_HOST 是否正確）：' + err.message);
     }
 });
 
