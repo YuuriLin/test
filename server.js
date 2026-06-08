@@ -5,7 +5,9 @@ require('dotenv').config();
 
 const app = express();
 
-// LINE Bot 配置設定
+// ==========================================
+// 1. LINE Bot 與 資料庫 配置設定
+// ==========================================
 const config = {
     channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
     channelSecret: process.env.CHANNEL_SECRET,
@@ -23,10 +25,12 @@ const dbPool = mysql.createPool({
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: process.env.DB_PORT,
-    ssl: { rejectUnauthorized: false } // Aiven 資料庫必備
+    ssl: { rejectUnauthorized: false } // Aiven Cloud 必備的 SSL 安全連線設定
 });
 
-// 四花軟居「歡迎詞」Flex 訊息主體
+// ==========================================
+// 2. LINE Flex 訊息樣板（歡迎詞）
+// ==========================================
 const getWelcomeFlexMessage = (displayName) => {
   return {
     type: "flex",
@@ -113,17 +117,18 @@ const getWelcomeFlexMessage = (displayName) => {
   };
 };
 
-// LINE 規定必須使用的簽章驗證中間件
+// ==========================================
+// 3. LINE Webhook 路由與核心事件處理器
+// ==========================================
 app.post('/webhook', line.middleware(config), (req, res) => {
     Promise.all(req.body.events.map(handleEvent))
         .then((result) => res.json(result))
         .catch((err) => {
-            console.error('Webhook 錯誤:', err);
+            console.error('Webhook 核心錯誤:', err);
             res.status(500).end();
         });
 });
 
-// 事件核心處理器
 async function handleEvent(event) {
     // 狀況 1：當新好友加入（Follow）
     if (event.type === 'follow') {
@@ -145,13 +150,13 @@ async function handleEvent(event) {
         });
     }
 
-    // 狀況 2：當使用者點擊按鈕傳送純文字訊息過來（Message）
+    // 狀況 2：當使用者傳送純文字訊息或點擊文字關鍵字（Message）
     if (event.type === 'message' && event.message.type === 'text') {
         const userText = event.message.text.trim();
         const userId = event.source.userId;
         console.log(`[收到文字訊息] 來自 ID: ${userId}, 內容: ${userText}`);
 
-        // 🎯 核心修正：當點擊「寵物展限定 : 優惠卷領取」
+        // 🎯 核心修正點：當點擊「寵物展限定 : 優惠卷領取」
         if (userText === '寵物展限定 : 優惠卷領取') {
             return client.replyMessage({
                 replyToken: event.replyToken,
@@ -161,7 +166,7 @@ async function handleEvent(event) {
                         type: 'text',
                         text: '感謝您的輸入，優惠代碼為:123，請於結帳時輸入即可套用，請點選以下您感興趣的商品，可以讓我們對您更加了解呦'
                     },
-                    // 訊息 2：🔧 修正處：移除 bubble 層級中錯誤的 size: 'medium' 屬性
+                    // 訊息 2：🔧 修正處：已將此處原先錯誤的 size: 'medium' 欄位徹底移除，防止 LINE API 報錯 400
                     {
                         type: 'flex',
                         altText: '選擇您感興趣的商品系列',
@@ -206,7 +211,7 @@ async function handleEvent(event) {
             });
         }
 
-        // 🏷️ 預留區塊：當顧客點擊商品系列按鈕時的回覆與貼標籤邏輯
+        // 🏷️ 預留區塊：可自行擴充顧客點擊商品系列按鈕時的回覆與邏輯
         if (userText === '我想了解枕頭系列') {
             console.log(`[興趣標籤] 使用者 ${userId} 對【枕頭系列】感興趣`);
         }
@@ -220,7 +225,7 @@ async function handleEvent(event) {
         return null;
     }
 
-    // 狀況 3：當使用者點擊傳統 Postback 按鈕
+    // 狀況 3：當使用者點擊 Postback 按鈕（用於往後資料庫貼標籤擴充）
     if (event.type === 'postback') {
         const userId = event.source.userId;
         const postbackData = event.postback.data; 
@@ -254,7 +259,7 @@ async function handleEvent(event) {
 }
 
 // ==========================================
-// 🛠️ 自動檢查並建立資料表的防呆機制
+// 4. 🛠️ 自動檢查並建立資料表的防呆機制
 // ==========================================
 async function initDatabaseTable() {
     try {
@@ -270,19 +275,20 @@ async function initDatabaseTable() {
         await dbPool.query(createTableSql);
         console.log('✅ 資料庫連線成功，且 sihua_db.click_logs 資料表已自動準備就緒！');
     } catch (err) {
-        console.error('⚠️ 資料庫連線或初始化失敗，請檢查 Render 的 DB 變數設定（目前不影響機器人發送訊息）：', err.message);
+        // 這裡改為 console.warn 且不拋出錯誤，確保即使主機名稱暫時找不到，LINE 機器人聊天功能依然能活著發送
+        console.warn('⚠️ 資料庫初始化失敗。請檢查 Render 後台的 DB_HOST 是否與 Aiven 一致。目前不影響 LINE 訊息收發。錯誤原因:', err.message);
     }
 }
 
-// 使用安全封裝呼叫，防止因資料庫連不上而導致整個 Node 程式崩潰
+// 使用獨立的 try-catch 包裹，防止環境變數異常阻斷整個伺服器啟動
 try {
     initDatabaseTable();
 } catch (e) {
-    console.error('資料庫啟動引導異常:', e.message);
+    console.error('資料庫啟動引導發生異常:', e.message);
 }
 
 // ==========================================
-// 📥 從網頁直接看資料庫紀錄的祕密通道
+// 5. 📥 後台點擊紀錄網頁明細 (Secret網頁)
 // ==========================================
 app.get('/view-logs', async (req, res) => {
     try {
@@ -333,10 +339,13 @@ app.get('/view-logs', async (req, res) => {
         html += `</table></body></html>`;
         res.send(html);
     } catch (err) {
-        res.status(500).send('資料庫讀取失敗（請先確認環境變數 DB_HOST 是否正確）：' + err.message);
+        res.status(500).send('後台資料讀取失敗（請確認 Render 環境變數中的 DB_HOST 網址是否正確解析）：' + err.message);
     }
 });
 
+// ==========================================
+// 6. 啟動 Web 伺服器
+// ==========================================
 const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => {
     res.redirect('/view-logs');
