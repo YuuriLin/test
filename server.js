@@ -61,7 +61,7 @@ const getWelcomeFlexMessage = (displayName) => {
             contents: [
               {
                 type: "text",
-                text: "1. 先逛逛人氣商品",
+                text: "先逛逛人氣商品",
                 size: "md",
                 color: "#4A6B82",
                 align: "center",
@@ -69,7 +69,7 @@ const getWelcomeFlexMessage = (displayName) => {
               },
               {
                 type: "text",
-                text: "2. 找適合我的枕頭 例：雙11",
+                text: "找適合我的枕頭 例：雙11",
                 size: "md",
                 color: "#4A6B82",
                 align: "center",
@@ -77,7 +77,7 @@ const getWelcomeFlexMessage = (displayName) => {
               },
               {
                 type: "text",
-                text: "3. 夏日涼感床包",
+                text: "夏日涼感床包",
                 size: "md",
                 color: "#4A6B82",
                 align: "center",
@@ -85,7 +85,7 @@ const getWelcomeFlexMessage = (displayName) => {
               },
               {
                 type: "text",
-                text: "4. 助眠周邊小物",
+                text: "助眠周邊小物",
                 size: "md",
                 color: "#4A6B82",
                 align: "center",
@@ -93,7 +93,7 @@ const getWelcomeFlexMessage = (displayName) => {
               },
               {
                 type: "text",
-                text: "5. 已購買客服詢問",
+                text: "已購買客服詢問",
                 size: "md",
                 color: "#4A6B82",
                 align: "center",
@@ -101,7 +101,7 @@ const getWelcomeFlexMessage = (displayName) => {
               },
               {
                 type: "text",
-                text: "6. 寵物展限定 : 優惠卷領取",
+                text: "寵物展限定 : 優惠卷領取",
                 size: "md",
                 color: "#4A6B82",
                 align: "center",
