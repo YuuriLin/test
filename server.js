@@ -131,7 +131,7 @@ const getCouponFlexMessage = () => {
   };
 };
 
-// 🎯 (樣板 C) 已修正：去除了說明文字與 (前往官網) 字樣，畫面更精簡乾淨
+// 🎯 (樣板 C) 已修正：移除 weight: "bold"，讓字體粗細與顏色跟歡迎詞的選單完全一致
 const getPillowOptionsFlexMessage = () => {
   return {
     type: "flex",
@@ -143,7 +143,7 @@ const getPillowOptionsFlexMessage = () => {
         layout: "vertical",
         paddingAll: "xl",
         backgroundColor: "#FFFFFF",
-        spacing: "xl", // 設定選項之間的間距
+        spacing: "xl", 
         contents: [
           {
             type: "text",
@@ -151,11 +151,9 @@ const getPillowOptionsFlexMessage = () => {
             size: "md",
             color: "#4A6B82",
             align: "center",
-            weight: "bold",
             action: { 
                 type: "uri", 
                 label: "了解牽引安眠枕", 
-                // 💡 提示：若希望網頁100%在LINE內部打開且能下滑縮小，請至LINE後台申請 LIFF 網址並替換此處 (例如 https://liff.line.me/xxxx)
                 uri: "https://reurl.cc/r0W21N" 
             }
           },
@@ -165,11 +163,9 @@ const getPillowOptionsFlexMessage = () => {
             size: "md",
             color: "#4A6B82",
             align: "center",
-            weight: "bold",
             action: { 
                 type: "uri", 
                 label: "了解輕雲枕", 
-                // 💡 提示：若希望網頁100%在LINE內部打開且能下滑縮小，請至LINE後台申請 LIFF 網址並替換此處 (例如 https://liff.line.me/xxxx)
                 uri: "https://reurl.cc/9W8q5a" 
             }
           }
@@ -192,7 +188,6 @@ app.post('/webhook', line.middleware(config), (req, res) => {
 });
 
 async function handleEvent(event) {
-    // 狀況 1：當新好友加入（Follow）
     if (event.type === 'follow') {
         const userId = event.source.userId;
         let displayName = "新朋友";
@@ -212,24 +207,21 @@ async function handleEvent(event) {
         });
     }
 
-    // 狀況 2：當使用者傳送純文字訊息
     if (event.type === 'message' && event.message.type === 'text') {
         const userText = event.message.text.trim();
         const userId = event.source.userId;
         console.log(`[收到文字訊息] 來自 ID: ${userId}, 內容: ${userText}`);
 
-        // 當點擊「找適合我的枕頭」或「選枕指南」時，同時回覆圖片與連結按鈕
         if (userText === '找適合我的枕頭' || userText === '選枕指南') {
             return client.replyMessage({
                 replyToken: event.replyToken,
                 messages: [
-                    PILLOW_GUIDE_IMAGE,             // 第一則：GitHub 上的指南圖片
-                    getPillowOptionsFlexMessage()   // 第二則：精簡優化後的跳轉按鈕
+                    PILLOW_GUIDE_IMAGE,             
+                    getPillowOptionsFlexMessage()   
                 ]
             });
         }
 
-        // 觸發關鍵字：當點擊「寵物展限定 : 優惠卷領取」
         if (userText === '寵物展限定 : 優惠卷領取') {
             return client.replyMessage({
                 replyToken: event.replyToken,
@@ -239,7 +231,6 @@ async function handleEvent(event) {
         return null;
     }
 
-    // 狀況 3：當使用者點擊貼標籤型選項（Postback）
     if (event.type === 'postback') {
         const userId = event.source.userId;
         const postbackData = event.postback.data; 
@@ -259,7 +250,6 @@ async function handleEvent(event) {
             const tagGroup = params.get('tag');
             const optionNum = params.get('option');
 
-            // 寫入資料庫
             const sql = 'INSERT INTO click_logs (user_id, tag_group, option_num, clicked_at) VALUES (?, ?, ?, NOW())';
             await dbPool.query(sql, [displayName, tagGroup, optionNum]);
             
@@ -304,7 +294,7 @@ async function initDatabaseTable() {
 try {
     initDatabaseTable();
 } catch (e) {
-    console.error('資料庫引引导異常:', e.message);
+    console.error('資料庫引導異常:', e.message);
 }
 
 // ==========================================
