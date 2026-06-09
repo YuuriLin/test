@@ -4,14 +4,13 @@ const mysql = require('mysql2/promise');
 require('dotenv').config();
 
 // ==========================================
-// 1. LINE Bot 與 資料庫 配置設定（已修正 app 啟動錯誤）
+// 1. LINE Bot 與 資料庫 配置設定
 // ==========================================
 const config = {
     channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
     channelSecret: process.env.CHANNEL_SECRET,
 };
 
-// 🎯 這裡已修正：移除未定義的 report 變數
 const app = express();
 
 // 建立 LINE 官方 Messaging API 客戶端
@@ -132,7 +131,7 @@ const getCouponFlexMessage = () => {
   };
 };
 
-// (樣板 C) 選枕指南下方的產品網頁跳轉按鈕
+// 🎯 (樣板 C) 已修正：去除了說明文字與 (前往官網) 字樣，畫面更精簡乾淨
 const getPillowOptionsFlexMessage = () => {
   return {
     type: "flex",
@@ -144,49 +143,35 @@ const getPillowOptionsFlexMessage = () => {
         layout: "vertical",
         paddingAll: "xl",
         backgroundColor: "#FFFFFF",
+        spacing: "xl", // 設定選項之間的間距
         contents: [
           {
             type: "text",
-            text: "依據上方的選枕指南，哪一款最適合您的睡眠習慣呢？🥰\n點選下方按鈕直接查看詳細介紹：",
-            wrap: true,
-            size: "sm",
-            color: "#333333",
-            lineSpacing: "5px"
+            text: "了解牽引安眠枕",
+            size: "md",
+            color: "#4A6B82",
+            align: "center",
+            weight: "bold",
+            action: { 
+                type: "uri", 
+                label: "了解牽引安眠枕", 
+                // 💡 提示：若希望網頁100%在LINE內部打開且能下滑縮小，請至LINE後台申請 LIFF 網址並替換此處 (例如 https://liff.line.me/xxxx)
+                uri: "https://reurl.cc/r0W21N" 
+            }
           },
-          { type: "separator", margin: "lg", color: "#CCCCCC" },
           {
-            type: "box",
-            layout: "vertical",
-            margin: "lg",
-            spacing: "xl",
-            contents: [
-              {
-                type: "text",
-                text: "✨ 了解牽引安眠枕 (前往官網)",
-                size: "md",
-                color: "#4A6B82",
-                align: "center",
-                weight: "bold",
-                action: { 
-                    type: "uri", 
-                    label: "了解牽引安眠枕", 
-                    uri: "https://reurl.cc/r0W21N"
-                }
-              },
-              {
-                type: "text",
-                text: "✨ 了解輕雲枕 (前往官網)",
-                size: "md",
-                color: "#4A6B82",
-                align: "center",
-                weight: "bold",
-                action: { 
-                    type: "uri", 
-                    label: "了解輕雲枕", 
-                    uri: "https://reurl.cc/9W8q5a"
-                }
-              }
-            ]
+            type: "text",
+            text: "了解輕雲枕",
+            size: "md",
+            color: "#4A6B82",
+            align: "center",
+            weight: "bold",
+            action: { 
+                type: "uri", 
+                label: "了解輕雲枕", 
+                // 💡 提示：若希望網頁100%在LINE內部打開且能下滑縮小，請至LINE後台申請 LIFF 網址並替換此處 (例如 https://liff.line.me/xxxx)
+                uri: "https://reurl.cc/9W8q5a" 
+            }
           }
         ]
       }
@@ -239,7 +224,7 @@ async function handleEvent(event) {
                 replyToken: event.replyToken,
                 messages: [
                     PILLOW_GUIDE_IMAGE,             // 第一則：GitHub 上的指南圖片
-                    getPillowOptionsFlexMessage()   // 第二則：帶有官網連結的按鈕
+                    getPillowOptionsFlexMessage()   // 第二則：精簡優化後的跳轉按鈕
                 ]
             });
         }
@@ -319,7 +304,7 @@ async function initDatabaseTable() {
 try {
     initDatabaseTable();
 } catch (e) {
-    console.error('資料庫引導異常:', e.message);
+    console.error('資料庫引引导異常:', e.message);
 }
 
 // ==========================================
