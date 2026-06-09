@@ -31,10 +31,18 @@ const dbPool = mysql.createPool({
 // ==========================================
 // 2. 靜態資產設定（GitHub 圖片直連網址）
 // ==========================================
+// 選枕指南圖片
 const PILLOW_GUIDE_IMAGE = {
     type: 'image',
     originalContentUrl: 'https://raw.githubusercontent.com/YuuriLin/test/main/810x1080-1.jpg',
     previewImageUrl: 'https://raw.githubusercontent.com/YuuriLin/test/main/810x1080-1.jpg'
+};
+
+// 寵物展優惠券圖片（圖片大小建議 1:1，如 1024x1024）
+const COUPON_IMAGE = {
+    type: 'image',
+    originalContentUrl: 'https://raw.githubusercontent.com/YuuriLin/test/main/coupon.jpg',
+    previewImageUrl: 'https://raw.githubusercontent.com/YuuriLin/test/main/coupon.jpg'
 };
 
 // ==========================================
@@ -83,11 +91,11 @@ const getWelcomeFlexMessage = (displayName) => {
   };
 };
 
-// (樣板 B) 寵物展優惠券
+// 🎯 (樣板 B) 調整後：配合新流程，移除了重疊的文字，專注於引導商品喜好與驚嘆號說明
 const getCouponFlexMessage = () => {
   return {
     type: "flex",
-    altText: "感謝您的輸入，這是您的寵物展限定優惠！", 
+    altText: "請點選您感興趣的商品，讓我們更加了解您 🐾", 
     contents: {
       type: "bubble",
       body: {
@@ -98,7 +106,7 @@ const getCouponFlexMessage = () => {
         contents: [
           {
             type: "text",
-            text: "感謝您的輸入，優惠代碼為:123，請於結帳時輸入即可套用，\n請點選以下您感興趣的商品，可以讓我們對您更加了解呦。",
+            text: "請點選以下您感興趣的商品，可以讓我們對您更加了解呦。",
             wrap: true,
             size: "sm",
             color: "#333333",
@@ -131,7 +139,7 @@ const getCouponFlexMessage = () => {
   };
 };
 
-// 🎯 (樣板 C) 已修正：移除 weight: "bold"，讓字體粗細與顏色跟歡迎詞的選單完全一致
+// (樣板 C) 保留：粗體與帶有 ✨ 星號的枕頭選項樣板
 const getPillowOptionsFlexMessage = () => {
   return {
     type: "flex",
@@ -147,10 +155,11 @@ const getPillowOptionsFlexMessage = () => {
         contents: [
           {
             type: "text",
-            text: "了解牽引安眠枕",
+            text: "✨ 了解牽引安眠枕",
             size: "md",
             color: "#4A6B82",
             align: "center",
+            weight: "bold",
             action: { 
                 type: "uri", 
                 label: "了解牽引安眠枕", 
@@ -159,10 +168,11 @@ const getPillowOptionsFlexMessage = () => {
           },
           {
             type: "text",
-            text: "了解輕雲枕",
+            text: "✨ 了解輕雲枕",
             size: "md",
             color: "#4A6B82",
             align: "center",
+            weight: "bold",
             action: { 
                 type: "uri", 
                 label: "了解輕雲枕", 
@@ -222,10 +232,25 @@ async function handleEvent(event) {
             });
         }
 
+        // 🎯 步驟 1：點擊選單後，提示輸入攤位號碼
         if (userText === '寵物展限定 : 優惠卷領取') {
             return client.replyMessage({
                 replyToken: event.replyToken,
-                messages: [getCouponFlexMessage()]
+                messages: [{
+                    type: 'text',
+                    text: '請於對話框輸入臺北市流浪貓保護協會攤位號碼後即可領取專屬9折優惠券！'
+                }]
+            });
+        }
+
+        // 🎯 步驟 2：當使用者輸入攤位號碼時（此處以 '123' 為範例，如需更改攤位號可修改此字串）
+        if (userText === '123') {
+            return client.replyMessage({
+                replyToken: event.replyToken,
+                messages: [
+                    COUPON_IMAGE,           // 先發送優惠券圖片
+                    getCouponFlexMessage()  // 再發送興趣點選按鈕與⚠️使用說明
+                ]
             });
         }
         return null;
