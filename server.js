@@ -3,15 +3,16 @@ const line = require('@line/bot-sdk');
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-const app = report || express();
-
 // ==========================================
-// 1. LINE Bot 與 資料庫 配置設定
+// 1. LINE Bot 與 資料庫 配置設定（已修正 app 啟動錯誤）
 // ==========================================
 const config = {
     channelAccessToken: process.env.CHANNEL_ACCESS_TOKEN,
     channelSecret: process.env.CHANNEL_SECRET,
 };
+
+// 🎯 這裡已修正：移除未定義的 report 變數
+const app = express();
 
 // 建立 LINE 官方 Messaging API 客戶端
 const client = new line.messagingApi.MessagingApiClient({
@@ -131,7 +132,7 @@ const getCouponFlexMessage = () => {
   };
 };
 
-// (樣板 C) 🎯 新增：選枕指南下方的產品網頁跳轉按鈕
+// (樣板 C) 選枕指南下方的產品網頁跳轉按鈕
 const getPillowOptionsFlexMessage = () => {
   return {
     type: "flex",
@@ -169,7 +170,7 @@ const getPillowOptionsFlexMessage = () => {
                 action: { 
                     type: "uri", 
                     label: "了解牽引安眠枕", 
-                    uri: "https://reurl.cc/r0W21N" // 👈 請替換成真正的牽引枕商品網址
+                    uri: "https://reurl.cc/r0W21N"
                 }
               },
               {
@@ -182,7 +183,7 @@ const getPillowOptionsFlexMessage = () => {
                 action: { 
                     type: "uri", 
                     label: "了解輕雲枕", 
-                    uri: "https://reurl.cc/9W8q5a" // 👈 請替換成真正的輕雲枕商品網址
+                    uri: "https://reurl.cc/9W8q5a"
                 }
               }
             ]
@@ -232,7 +233,7 @@ async function handleEvent(event) {
         const userId = event.source.userId;
         console.log(`[收到文字訊息] 來自 ID: ${userId}, 內容: ${userText}`);
 
-        // 🎯 修正處：當點擊「找適合我的枕頭」或「選枕指南」時，同時回覆圖片與連結按鈕
+        // 當點擊「找適合我的枕頭」或「選枕指南」時，同時回覆圖片與連結按鈕
         if (userText === '找適合我的枕頭' || userText === '選枕指南') {
             return client.replyMessage({
                 replyToken: event.replyToken,
@@ -243,7 +244,7 @@ async function handleEvent(event) {
             });
         }
 
-        // 🎯 觸發關鍵字：當點擊「寵物展限定 : 優惠卷領取」
+        // 觸發關鍵字：當點擊「寵物展限定 : 優惠卷領取」
         if (userText === '寵物展限定 : 優惠卷領取') {
             return client.replyMessage({
                 replyToken: event.replyToken,
