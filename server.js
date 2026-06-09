@@ -3,7 +3,7 @@ const line = require('@line/bot-sdk');
 const mysql = require('mysql2/promise');
 require('dotenv').config();
 
-const app = express();
+const app = report || express();
 
 // ==========================================
 // 1. LINE Bot 與 資料庫 配置設定
@@ -29,8 +29,19 @@ const dbPool = mysql.createPool({
 });
 
 // ==========================================
-// 2. LINE Flex 訊息樣板（歡迎詞）
+// 2. 靜態資產設定（GitHub 圖片直連網址）
 // ==========================================
+const PILLOW_GUIDE_IMAGE = {
+    type: 'image',
+    originalContentUrl: 'https://raw.githubusercontent.com/YuuriLin/test/main/810x1080-1.jpg',
+    previewImageUrl: 'https://raw.githubusercontent.com/YuuriLin/test/main/810x1080-1.jpg'
+};
+
+// ==========================================
+// 3. LINE Flex 訊息樣板區
+// ==========================================
+
+// (樣板 A) 新朋友歡迎詞
 const getWelcomeFlexMessage = (displayName) => {
   return {
     type: "flex",
@@ -51,64 +62,19 @@ const getWelcomeFlexMessage = (displayName) => {
             color: "#333333",
             lineSpacing: "5px"
           },
-          // 分隔線
           { type: "separator", margin: "lg", color: "#CCCCCC" },
-          
-          // 下方選項
           {
             type: "box",
             layout: "vertical",
             margin: "lg",
             spacing: "xl",
             contents: [
-              {
-                type: "text",
-                text: "先逛逛人氣商品",
-                size: "md",
-                color: "#4A6B82",
-                align: "center",
-                action: { type: "message", label: "先逛逛人氣商品", text: "先逛逛人氣商品" }
-              },
-              {
-                type: "text",
-                text: "找適合我的枕頭",
-                size: "md",
-                color: "#4A6B82",
-                align: "center",
-                action: { type: "message", label: "找適合我的枕頭", text: "找適合我的枕頭" }
-              },
-              {
-                type: "text",
-                text: "夏日涼感床包",
-                size: "md",
-                color: "#4A6B82",
-                align: "center",
-                action: { type: "message", label: "夏日涼感床包", text: "夏日涼感床包" }
-              },
-              {
-                type: "text",
-                text: "助眠周邊小物",
-                size: "md",
-                color: "#4A6B82",
-                align: "center",
-                action: { type: "message", label: "助眠周邊小物", text: "助眠周邊小物" }
-              },
-              {
-                type: "text",
-                text: "已購買客服詢問",
-                size: "md",
-                color: "#4A6B82",
-                align: "center",
-                action: { type: "message", label: "5.已購買客服詢問", text: "5.已購買客服詢問" }
-              },
-              {
-                type: "text",
-                text: "寵物展限定 : 優惠卷領取",
-                size: "md",
-                color: "#4A6B82",
-                align: "center",
-                action: { type: "message", label: "寵物展限定 : 優惠卷領取", text: "寵物展限定 : 優惠卷領取" }
-              }
+              { type: "text", text: "先逛逛人氣商品", size: "md", color: "#4A6B82", align: "center", action: { type: "message", label: "先逛逛人氣商品", text: "先逛逛人氣商品" } },
+              { type: "text", text: "找適合我的枕頭", size: "md", color: "#4A6B82", align: "center", action: { type: "message", label: "找適合我的枕頭", text: "找適合我的枕頭" } },
+              { type: "text", text: "夏日涼感床包", size: "md", color: "#4A6B82", align: "center", action: { type: "message", label: "夏日涼感床包", text: "夏日涼感床包" } },
+              { type: "text", text: "助眠周邊小物", size: "md", color: "#4A6B82", align: "center", action: { type: "message", label: "助眠周邊小物", text: "助眠周邊小物" } },
+              { type: "text", text: "已購買客服詢問", size: "md", color: "#4A6B82", align: "center", action: { type: "message", label: "已購買客服詢問", text: "已購買客服詢問" } },
+              { type: "text", text: "寵物展限定 : 優惠卷領取", size: "md", color: "#4A6B82", align: "center", action: { type: "message", label: "寵物展限定 : 優惠卷領取", text: "寵物展限定 : 優惠卷領取" } }
             ]
           }
         ]
@@ -117,9 +83,7 @@ const getWelcomeFlexMessage = (displayName) => {
   };
 };
 
-// ==========================================
-// 3. 🎯 優惠券 Flex 訊息樣板（精準分類標籤版）
-// ==========================================
+// (樣板 B) 寵物展優惠券
 const getCouponFlexMessage = () => {
   return {
     type: "flex",
@@ -132,7 +96,6 @@ const getCouponFlexMessage = () => {
         paddingAll: "xl",
         backgroundColor: "#FFFFFF",
         contents: [
-          // 上方：感謝語與引導文字
           {
             type: "text",
             text: "感謝您的輸入，優惠代碼為:123，請於結帳時輸入即可套用，\n請點選以下您感興趣的商品，可以讓我們對您更加了解呦。",
@@ -141,7 +104,6 @@ const getCouponFlexMessage = () => {
             color: "#333333",
             lineSpacing: "5px"
           },
-          // 中間：使用說明提示
           {
             type: "text",
             text: "⚠️ 使用說明:優惠代碼使用期限至7/18為止，不可與官網其餘優惠活動並用，但可與商品優惠組合併用，一組帳號僅限使用一次，每筆使用優惠代碼結帳訂單，皆會捐出$200分潤給「臺北市流浪貓保護協會」。",
@@ -151,10 +113,46 @@ const getCouponFlexMessage = () => {
             margin: "md",
             lineSpacing: "4px"
           },
-          // 分隔線
           { type: "separator", margin: "lg", color: "#CCCCCC" },
-          
-          // 下方選項：🔧 標籤改為依點選品類精準獨立命名
+          {
+            type: "box",
+            layout: "vertical",
+            margin: "lg",
+            spacing: "xl",
+            contents: [
+              { type: "text", text: "枕頭系列", size: "md", color: "#4A6B82", align: "center", action: { type: "postback", label: "枕頭系列", data: "tag=枕頭系列&option=1", displayText: "我想了解枕頭系列" } },
+              { type: "text", text: "床包系列", size: "md", color: "#4A6B82", align: "center", action: { type: "postback", label: "床包系列", data: "tag=床包系列&option=2", displayText: "我想了解床包系列" } },
+              { type: "text", text: "助眠香氣系列", size: "md", color: "#4A6B82", align: "center", action: { type: "postback", label: "助眠香氣系列", data: "tag=助眠香氣系列&option=3", displayText: "我想了解助眠香氣系列" } }
+            ]
+          }
+        ]
+      }
+    }
+  };
+};
+
+// (樣板 C) 🎯 新增：選枕指南下方的產品網頁跳轉按鈕
+const getPillowOptionsFlexMessage = () => {
+  return {
+    type: "flex",
+    altText: "請選擇您想了解的枕頭款式 💤", 
+    contents: {
+      type: "bubble",
+      body: {
+        type: "box",
+        layout: "vertical",
+        paddingAll: "xl",
+        backgroundColor: "#FFFFFF",
+        contents: [
+          {
+            type: "text",
+            text: "依據上方的選枕指南，哪一款最適合您的睡眠習慣呢？🥰\n點選下方按鈕直接查看詳細介紹：",
+            wrap: true,
+            size: "sm",
+            color: "#333333",
+            lineSpacing: "5px"
+          },
+          { type: "separator", margin: "lg", color: "#CCCCCC" },
           {
             type: "box",
             layout: "vertical",
@@ -163,41 +161,28 @@ const getCouponFlexMessage = () => {
             contents: [
               {
                 type: "text",
-                text: "枕頭系列",
+                text: "✨ 了解牽引安眠枕 (前往官網)",
                 size: "md",
                 color: "#4A6B82",
                 align: "center",
+                weight: "bold",
                 action: { 
-                    type: "postback", 
-                    label: "枕頭系列", 
-                    data: "tag=枕頭系列&option=1", // 👈 標籤直接寫入「枕頭系列」
-                    displayText: "我想了解枕頭系列" 
+                    type: "uri", 
+                    label: "了解牽引安眠枕", 
+                    uri: "https://reurl.cc/r0W21N" // 👈 請替換成真正的牽引枕商品網址
                 }
               },
               {
                 type: "text",
-                text: "床包系列",
+                text: "✨ 了解輕雲枕 (前往官網)",
                 size: "md",
                 color: "#4A6B82",
                 align: "center",
+                weight: "bold",
                 action: { 
-                    type: "postback", 
-                    label: "床包系列", 
-                    data: "tag=床包系列&option=2", // 👈 標籤直接寫入「床包系列」
-                    displayText: "我想了解床包系列" 
-                }
-              },
-              {
-                type: "text",
-                text: "助眠香氣系列",
-                size: "md",
-                color: "#4A6B82",
-                align: "center",
-                action: { 
-                    type: "postback", 
-                    label: "助眠香氣系列", 
-                    data: "tag=助眠香氣系列&option=3", // 👈 標籤直接寫入「助眠香氣系列」
-                    displayText: "我想了解助眠香氣系列" 
+                    type: "uri", 
+                    label: "了解輕雲枕", 
+                    uri: "https://reurl.cc/9W8q5a" // 👈 請替換成真正的輕雲枕商品網址
                 }
               }
             ]
@@ -247,7 +232,18 @@ async function handleEvent(event) {
         const userId = event.source.userId;
         console.log(`[收到文字訊息] 來自 ID: ${userId}, 內容: ${userText}`);
 
-        // 當點擊「寵物展限定 : 優惠卷領取」
+        // 🎯 修正處：當點擊「找適合我的枕頭」或「選枕指南」時，同時回覆圖片與連結按鈕
+        if (userText === '找適合我的枕頭' || userText === '選枕指南') {
+            return client.replyMessage({
+                replyToken: event.replyToken,
+                messages: [
+                    PILLOW_GUIDE_IMAGE,             // 第一則：GitHub 上的指南圖片
+                    getPillowOptionsFlexMessage()   // 第二則：帶有官網連結的按鈕
+                ]
+            });
+        }
+
+        // 🎯 觸發關鍵字：當點擊「寵物展限定 : 優惠卷領取」
         if (userText === '寵物展限定 : 優惠卷領取') {
             return client.replyMessage({
                 replyToken: event.replyToken,
@@ -287,7 +283,6 @@ async function handleEvent(event) {
             console.error('資料庫寫入失敗：', dbError.message);
         }
 
-        // 自動回饋感謝訊息
         return client.replyMessage({
             replyToken: event.replyToken,
             messages: [{
