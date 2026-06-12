@@ -38,7 +38,7 @@ const PILLOW_GUIDE_IMAGE = {
     previewImageUrl: 'https://raw.githubusercontent.com/YuuriLin/test/main/810x1080-1.jpg'
 };
 
-// 寵物展優惠券圖片（圖片大小建議 1:1，如 1024x1024）
+// 寵物展優惠券圖片
 const COUPON_IMAGE = {
     type: 'image',
     originalContentUrl: 'https://raw.githubusercontent.com/YuuriLin/test/main/coupon.jpg',
@@ -91,7 +91,7 @@ const getWelcomeFlexMessage = (displayName) => {
   };
 };
 
-// 🎯 (樣板 B) 調整後：配合新流程，移除了重疊的文字，專注於引導商品喜好與驚嘆號說明
+// (樣板 B) 優惠券說明與興趣選擇
 const getCouponFlexMessage = () => {
   return {
     type: "flex",
@@ -139,7 +139,7 @@ const getCouponFlexMessage = () => {
   };
 };
 
-// (樣板 C) 保留：粗體與帶有 ✨ 星號的枕頭選項樣板
+// (樣板 C) 枕頭款式選項
 const getPillowOptionsFlexMessage = () => {
   return {
     type: "flex",
@@ -232,7 +232,6 @@ async function handleEvent(event) {
             });
         }
 
-        // 🎯 步驟 1：點擊選單後，提示輸入攤位號碼
         if (userText === '寵物展限定 : 優惠卷領取') {
             return client.replyMessage({
                 replyToken: event.replyToken,
@@ -243,13 +242,12 @@ async function handleEvent(event) {
             });
         }
 
-        // 🎯 步驟 2：當使用者輸入攤位號碼時（此處以 '123' 為範例，如需更改攤位號可修改此字串）
         if (userText === '123') {
             return client.replyMessage({
                 replyToken: event.replyToken,
                 messages: [
-                    COUPON_IMAGE,           // 先發送優惠券圖片
-                    getCouponFlexMessage()  // 再發送興趣點選按鈕與⚠️使用說明
+                    COUPON_IMAGE,           
+                    getCouponFlexMessage()  
                 ]
             });
         }
@@ -386,12 +384,19 @@ app.get('/view-logs', async (req, res) => {
 });
 
 // ==========================================
-// 7. 啟動 Web 伺服器
+// 7. 啟動 Web 伺服器（安全雙軌相容機制）
 // ==========================================
-const PORT = process.env.PORT || 3000;
 app.get('/', (req, res) => {
     res.redirect('/view-logs');
 });
-app.listen(PORT, () => {
-    console.log(`🚀 Webhook 伺服器已在連接埠 ${PORT} 順利運作中！`);
-});
+
+// 如果偵測到不是在 Vercel 環境（代表在 Render 或本機環境），才啟動 app.listen
+if (!process.env.VERCEL) {
+    const PORT = process.env.PORT || 3000;
+    app.listen(PORT, () => {
+        console.log(`🚀 Render 傳統伺服器已在連接埠 ${PORT} 順利運作中！`);
+    });
+}
+
+// 導出 app 給 Vercel 的 Serverless 功能使用
+module.exports = app;
